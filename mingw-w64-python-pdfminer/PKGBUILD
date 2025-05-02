@@ -1,4 +1,5 @@
-# Maintainer: Some One <some.one@some.email.com>
+# Maintainer: Swarnava Ghosh <swarnavaghosh04@gmail.com>
+# Contributor: Bruno Pagani <archange@archlinux.org>
 
 _realname=pdfminer
 pkgbase=mingw-w64-python-${_realname}

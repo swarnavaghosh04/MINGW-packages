@@ -1,0 +1,47 @@
+# Maintainer: Swarnava Ghosh <swarnavaghosh04@gmail.com>
+# Contributor: Sergej Pupykin <pupykin.s+arch@gmail.com>
+# Contributor: Andreas Hauser <andy-aur@splashground.de>
+
+_realname=unpaper
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=7.0.0
+pkgrel=1
+pkgdesc="post-processing tool for scanned sheets of paper (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
+url='https://github.com/unpaper/unpaper'
+license=('GPL')
+depends=(
+  "${MINGW_PACKAGE_PREFIX}-ffmpeg")
+makedepends=(
+  "${MINGW_PACKAGE_PREFIX}-meson"
+  "${MINGW_PACKAGE_PREFIX}-ninja"
+  "${MINGW_PACKAGE_PREFIX}-pkg-config"
+  "${MINGW_PACKAGE_PREFIX}-cc"
+  "${MINGW_PACKAGE_PREFIX}-libxslt"
+  "${MINGW_PACKAGE_PREFIX}-docbook-xsl"
+  "${MINGW_PACKAGE_PREFIX}-python-sphinx")
+source=("$pkgname-${pkgver}.tar.gz::https://github.com/unpaper/unpaper/releases/download/$_realname-$pkgver/$_realname-$pkgver.tar.xz")
+sha256sums=('2575fbbf26c22719d1cb882b59602c9900c7f747118ac130883f63419be46a80')
+
+build() {
+  MSYS2_ARG_CONV_EXCL="--prefix=" \
+    meson setup \
+      --prefix="${MINGW_PREFIX}" \
+      --wrap-mode=nodownload \
+      --auto-features=enabled \
+      --buildtype=plain \
+      "build-${MSYSTEM}" \
+      "${_realname}-${pkgver}"
+
+  meson compile -C "build-${MSYSTEM}"
+}
+
+package() {
+  meson install -C "build-${MSYSTEM}" --destdir "${pkgdir}"
+  cd "${srcdir}/${_realname}-${pkgver}"
+  install -dm0755 "${pkgdir}${MINGW_PREFIX}/usr/share/doc/"
+  cp -a doc "${pkgdir}${MINGW_PREFIX}/usr/share/doc/${_realname}"
+  install -D README.md NEWS "${pkgdir}${MINGW_PREFIX}/usr/share/doc/${_realname}/"
+}
